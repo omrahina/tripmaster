@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InternalDataHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TourGuide</a> &gt; <a href="index.source.html" class="el_package">tourGuide.data</a> &gt; <span class="el_source">InternalDataHelper.java</span></div><h1>InternalDataHelper.java</h1><pre class="source lang-java linenums">package tourGuide.data;
+
+import gpsUtil.location.Location;
+import gpsUtil.location.VisitedLocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tourGuide.user.User;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
+import java.util.stream.IntStream;
+
+<span class="nc" id="L14">public class InternalDataHelper {</span>
+
+<span class="fc" id="L16">	private static final Logger LOGGER = LoggerFactory.getLogger(InternalDataHelper.class);</span>
+<span class="fc" id="L17">	private static final Map&lt;String, User&gt; INTERNAL_USER_MAP = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L18">	private static int internalUserNumber = 100;</span>
+
+	static {
+<span class="fc" id="L21">		initializeInternalUsers();</span>
+<span class="fc" id="L22">	}</span>
+	public static Map&lt;String, User&gt; getInternalUserMap() {
+<span class="fc" id="L24">		return INTERNAL_USER_MAP;</span>
+	}
+
+	public static void addInternalUser(User user) {
+<span class="fc" id="L28">		INTERNAL_USER_MAP.put(user.getUserName(), user);</span>
+<span class="fc" id="L29">	}</span>
+
+	public static void setInternalUserNumber(int internalUserNumber) {
+<span class="fc" id="L32">		InternalDataHelper.internalUserNumber = internalUserNumber;</span>
+<span class="fc" id="L33">	}</span>
+	
+	public static int getInternalUserNumber() {
+<span class="fc" id="L36">		return internalUserNumber;</span>
+	}
+
+	public static void initializeInternalUsers() {
+<span class="fc" id="L40">		LOGGER.info(&quot;Initializing users&quot;);</span>
+<span class="fc" id="L41">		INTERNAL_USER_MAP.clear();</span>
+<span class="fc" id="L42">		IntStream.range(0, InternalDataHelper.getInternalUserNumber()).forEach(i -&gt; {</span>
+<span class="fc" id="L43">			String userName = &quot;internalUser&quot; + i;</span>
+<span class="fc" id="L44">			String phone = &quot;000&quot;;</span>
+<span class="fc" id="L45">			String email = userName + &quot;@tourGuide.com&quot;;</span>
+<span class="fc" id="L46">			User user = new User(UUID.randomUUID(), userName, phone, email);</span>
+<span class="fc" id="L47">			generateUserLocationHistory(user);</span>
+
+<span class="fc" id="L49">			INTERNAL_USER_MAP.put(userName, user);</span>
+<span class="fc" id="L50">		});</span>
+<span class="fc" id="L51">		LOGGER.debug(&quot;Created {} internal test users.&quot;, getInternalUserNumber());</span>
+<span class="fc" id="L52">		LOGGER.debug(&quot;Finished initializing users&quot;);</span>
+<span class="fc" id="L53">	}</span>
+
+
+	private static void generateUserLocationHistory(User user) {
+<span class="fc" id="L57">		IntStream.range(0, 3).forEach(i-&gt; {</span>
+<span class="fc" id="L58">			user.addToVisitedLocations(new VisitedLocation(user.getUserId(), new Location(generateRandomLatitude(), generateRandomLongitude()), getRandomTime()));</span>
+<span class="fc" id="L59">		});</span>
+<span class="fc" id="L60">	}</span>
+
+	private static double generateRandomLongitude() {
+<span class="fc" id="L63">		double leftLimit = -180;</span>
+<span class="fc" id="L64">		double rightLimit = 180;</span>
+<span class="fc" id="L65">		return leftLimit + new Random().nextDouble() * (rightLimit - leftLimit);</span>
+	}
+
+	private static double generateRandomLatitude() {
+<span class="fc" id="L69">		double leftLimit = -85.05112878;</span>
+<span class="fc" id="L70">		double rightLimit = 85.05112878;</span>
+<span class="fc" id="L71">		return leftLimit + new Random().nextDouble() * (rightLimit - leftLimit);</span>
+	}
+
+	private static Date getRandomTime() {
+<span class="fc" id="L75">		LocalDateTime localDateTime = LocalDateTime.now().minusDays(new Random().nextInt(30));</span>
+<span class="fc" id="L76">		return Date.from(localDateTime.toInstant(ZoneOffset.UTC));</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

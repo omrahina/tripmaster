@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="tourGuide.performance.PerformanceTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2022-02-08T17:06:58" hostname="L1906741" time="3.214">
+  <properties/>
+  <testcase name="highVolumeTrackLocation" classname="tourGuide.performance.PerformanceTest" time="2.222"/>
+  <testcase name="highVolumeGetRewards" classname="tourGuide.performance.PerformanceTest" time="0.992"/>
+  <system-out><![CDATA[18:06:58.464 [Test worker] INFO tourGuide.data.InternalDataHelper - Initializing users
+18:06:59.263 [Test worker] DEBUG tourGuide.data.InternalDataHelper - Created 100 internal test users.
+18:06:59.270 [Test worker] DEBUG tourGuide.data.InternalDataHelper - Finished initializing users
+18:06:59.272 [Test worker] INFO tourGuide.data.InternalDataHelper - Initializing users
+18:06:59.350 [Test worker] DEBUG tourGuide.data.InternalDataHelper - Created 100 internal test users.
+18:06:59.351 [Test worker] DEBUG tourGuide.data.InternalDataHelper - Finished initializing users
+highVolumeTrackLocation: Time Elapsed: 0 seconds.
+18:07:00.282 [Test worker] INFO tourGuide.data.InternalDataHelper - Initializing users
+18:07:00.286 [Test worker] DEBUG tourGuide.data.InternalDataHelper - Created 10 internal test users.
+18:07:00.286 [Test worker] DEBUG tourGuide.data.InternalDataHelper - Finished initializing users
+highVolumeGetRewards: Time Elapsed: 0 seconds.
+]]></system-out>
+  <system-err><![CDATA[Feb 08, 2022 6:06:58 PM org.javamoney.moneta.DefaultMonetaryContextFactory createMonetaryContextNonNullConfig
+INFO: Using custom MathContext: precision=256, roundingMode=HALF_EVEN
+]]></system-err>
+</testsuite>
