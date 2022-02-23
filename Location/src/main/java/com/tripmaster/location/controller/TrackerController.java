@@ -36,7 +36,7 @@ public class TrackerController {
         Locale.setDefault(new Locale("en", "US"));
     }
 
-    @GetMapping("/getLocation")
+    @GetMapping("/location")
     public ResponseEntity<VisitedLocation> getLocation(@RequestParam String username) {
         VisitedLocation visitedLocation = null;
         UserLocation location = null;
@@ -50,16 +50,12 @@ public class TrackerController {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR, "Please retry", e);
         }
-        LOGGER.info("User location detected and added");
+        LOGGER.info("User location detected");
         return new ResponseEntity<>(visitedLocation, HttpStatus.OK);
     }
 
-    private UserLocation getUserLocation(String username) {
-        return userLocationService.findLocationEntryByUsername(username);
-    }
-
-    @GetMapping("/getAllCurrentLocations")
-    public ResponseEntity<List<LocationHistoryDto>> getAllCurrentLocations() {
+    @GetMapping("/allKnownLocations")
+    public ResponseEntity<List<LocationHistoryDto>> getAllKnownLocations() {
         List<UserLocation> locations = userLocationService.getAllUserLocations();
         List<LocationHistoryDto> locationHistory = trackerService.getAllKnownLocations(locations);
         if (locationHistory != null) {
@@ -67,6 +63,19 @@ public class TrackerController {
         }
 
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Location history empty");
+    }
+
+    @GetMapping("/locations")
+    public ResponseEntity<List<VisitedLocation>> getUserLocations(@RequestParam String username) {
+        UserLocation location = getUserLocation(username);
+        if (location != null) {
+            return new ResponseEntity<>(location.getVisitedLocations(), HttpStatus.OK);
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No location entry found for " + username);
+    }
+
+    private UserLocation getUserLocation(String username) {
+        return userLocationService.findLocationEntryByUsername(username);
     }
 
 }
