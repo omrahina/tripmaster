@@ -2,6 +2,16 @@
 <project version="4">
   <component name="RemoteRepositoriesConfiguration">
     <remote-repository>
+      <option name="id" value="local-maven-repo" />
+      <option name="name" value="local-maven-repo" />
+      <option name="url" value="file:///C:\ProgramJava\git_projects\tripmaster\location/local-maven-repo" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="local-maven-repo" />
+      <option name="name" value="local-maven-repo" />
+      <option name="url" value="file:///C:\ProgramJava\git_projects\tripmaster\tourguide/local-maven-repo" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="MavenRepo" />
       <option name="name" value="MavenRepo" />
       <option name="url" value="https://repo.maven.apache.org/maven2/" />
