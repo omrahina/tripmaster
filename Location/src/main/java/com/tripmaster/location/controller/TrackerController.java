@@ -39,9 +39,8 @@ public class TrackerController {
     @GetMapping("/location")
     public ResponseEntity<VisitedLocation> getLocation(@RequestParam String username) {
         VisitedLocation visitedLocation = null;
-        UserLocation location = null;
         try {
-            location = getUserLocation(username);
+            UserLocation location = getUserLocation(username);
             if (location == null) {
                 location = userLocationService.addLocation(new UserLocation(UUID.randomUUID(), username));
             }
