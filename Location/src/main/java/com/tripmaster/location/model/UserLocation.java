@@ -31,8 +31,8 @@ public class UserLocation {
         return visitedLocations;
     }
 
-    public VisitedLocation getLastVisitedLocation() {
-        return visitedLocations.get(visitedLocations.size() - 1);
+    public void setVisitedLocations(List<VisitedLocation> visitedLocations) {
+        this.visitedLocations = visitedLocations;
     }
 
     public void addToVisitedLocations(VisitedLocation visitedLocation) {

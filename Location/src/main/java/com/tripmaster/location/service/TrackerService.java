@@ -51,7 +51,7 @@ public class TrackerService {
             }
         }
 
-        return userLocation.getLastVisitedLocation();
+        return getLastVisitedLocation(userLocation);
     }
 
     public List<LocationHistoryDto> getAllKnownLocations(List<UserLocation> userLocations) {
@@ -82,6 +82,11 @@ public class TrackerService {
         } catch (InterruptedException e) {
             LOGGER.error(e.getMessage());
         }
+    }
+
+    private VisitedLocation getLastVisitedLocation(UserLocation userLocation) {
+        List<VisitedLocation> visitedLocations = userLocation.getVisitedLocations();
+        return visitedLocations.get(visitedLocations.size() - 1);
     }
 
 }
