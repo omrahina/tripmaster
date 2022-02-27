@@ -38,6 +38,21 @@
 			<artifactId>jsoniter</artifactId>
 			<version>0.9.23</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google</groupId>
+			<artifactId>tripPricer</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google</groupId>
+			<artifactId>gpsUtil</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google</groupId>
+			<artifactId>rewardCentral</artifactId>
+			<version>1.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -45,6 +60,13 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>local-maven-repo</id>
+			<url>file:///${project.basedir}/local-maven-repo</url>
+		</repository>
+	</repositories>
 
 	<build>
 		<plugins>
