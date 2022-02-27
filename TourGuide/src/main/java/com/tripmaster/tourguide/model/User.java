@@ -15,6 +15,13 @@ public class User {
 
     private Date latestLocationTimestamp;
 
+    public User(String username, String phoneNumber, String emailAddress) {
+        this.userId = UUID.randomUUID();
+        this.username = username;
+        this.phoneNumber = phoneNumber;
+        this.emailAddress = emailAddress;
+    }
+
     public User(UUID userId, String username, String phoneNumber, String emailAddress) {
         this.userId = userId;
         this.username = username;
