@@ -6,21 +6,25 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="location" />
         <module name="tourguide" />
         <module name="rewards" />
-        <module name="location" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="location" target="1.8" />
       <module name="rewards" target="1.8" />
       <module name="tourguide" target="1.8" />
+      <module name="tourGuideModel" target="1.8" />
+      <module name="tourGuidePersistence" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="location" options="-parameters" />
       <module name="rewards" options="-parameters" />
+      <module name="tourGuideModel" options="-parameters" />
+      <module name="tourGuidePersistence" options="-parameters" />
       <module name="tourguide" options="-parameters" />
     </option>
   </component>

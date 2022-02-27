@@ -31,5 +31,10 @@
       <option name="name" value="central" />
       <option name="url" value="http://central" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="local-maven-repo" />
+      <option name="name" value="local-maven-repo" />
+      <option name="url" value="file:///C:\ProgramJava\git_projects\tripmaster\rewards/reward-local-maven-repo" />
+    </remote-repository>
   </component>
 </project>
