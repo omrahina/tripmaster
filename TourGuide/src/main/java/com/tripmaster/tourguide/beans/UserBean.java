@@ -1,12 +1,30 @@
-package com.tripmaster.tourguide.dto;
+package com.tripmaster.tourguide.beans;
 
-public class UserDto {
+import java.util.Date;
+import java.util.UUID;
+
+public class UserBean {
+
+    private UUID userId;
 
     private String username;
 
     private String phoneNumber;
 
     private String emailAddress;
+
+    private Date latestLocationTimestamp;
+
+    public UserBean() {
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
 
     public String getUsername() {
         return username;
@@ -30,5 +48,13 @@ public class UserDto {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public Date getLatestLocationTimestamp() {
+        return latestLocationTimestamp;
+    }
+
+    public void setLatestLocationTimestamp(Date latestLocationTimestamp) {
+        this.latestLocationTimestamp = latestLocationTimestamp;
     }
 }
