@@ -1,12 +1,15 @@
 package com.tripmaster.tourguide.controller;
 
-import com.tripmaster.tourguide.beans.UserBean;
+import com.tripmaster.tourguide.beans.*;
+import com.tripmaster.tourguide.proxies.UserLocationMicroserviceProxy;
+import com.tripmaster.tourguide.proxies.UserRewardMicroserviceProxy;
 import com.tripmaster.tourguide.proxies.UsersMicroserviceProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/tourguide")
@@ -16,16 +19,51 @@ public class TourGuideController {
 
     private final UsersMicroserviceProxy usersProxy;
 
-    public TourGuideController(UsersMicroserviceProxy usersProxy) {
+    private final UserLocationMicroserviceProxy userLocationProxy;
+
+    private final UserRewardMicroserviceProxy userRewardProxy;
+
+    public TourGuideController(UsersMicroserviceProxy usersProxy, UserLocationMicroserviceProxy userLocationProxy, UserRewardMicroserviceProxy userRewardProxy) {
         this.usersProxy = usersProxy;
+        this.userLocationProxy = userLocationProxy;
+        this.userRewardProxy = userRewardProxy;
     }
 
     @RequestMapping("/addUser")
     public UserBean addUser(@RequestBody UserBean user) {
         UserBean savedUser = usersProxy.addUser(user);
+        UserLocationBean location = userLocationProxy.addLocationEntry(user.getUsername());
+        LOGGER.info(location.getUsername());
         return savedUser;
-
     }
 
+    @RequestMapping("/location")
+    public VisitedLocationBean getLocation(@RequestParam String username) {
+        return userLocationProxy.getLocation(username);
+    }
+
+    @GetMapping("/locations")
+    List<VisitedLocationBean> getUserLocations(@RequestParam String username) {
+        return userLocationProxy.getUserLocations(username);
+    }
+
+    @GetMapping("/allKnownLocations")
+    List<LocationHistoryBean> getAllKnownLocations() {
+        return userLocationProxy.getAllKnownLocations();
+    }
+
+    @GetMapping("/rewards")
+    List<RewardBean> getRewards(@RequestParam String username) {
+        List<VisitedLocationBean> visitedLocations = userLocationProxy.getUserLocations(username);
+        if (!CollectionUtils.isEmpty(visitedLocations)) {
+            return userRewardProxy.getRewards(username, visitedLocations);
+        }
+        return null;
+    }
+
+    @PutMapping("/preferences")
+    UserRewardBean updatePreferences(@RequestParam String username, @RequestBody UserPreferencesBean userPreferences) {
+        return userRewardProxy.updatePreferences(username, userPreferences);
+    }
 
 }
