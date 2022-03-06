@@ -6,6 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class UserRewardService {
 
@@ -36,6 +39,10 @@ public class UserRewardService {
         }
         LOGGER.warn("Reward entry not found");
         return null;
+    }
+
+    public List<UserReward> getAllUserRewardEntries() {
+        return  new ArrayList<>(MockRewardDataUtils.getInternalUserRewardMap().values());
     }
 
 }

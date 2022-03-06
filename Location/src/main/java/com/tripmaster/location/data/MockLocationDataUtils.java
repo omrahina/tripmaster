@@ -1,6 +1,7 @@
 package com.tripmaster.location.data;
 
 import com.tripmaster.location.model.UserLocation;
+import gpsUtil.GpsUtil;
 import gpsUtil.location.VisitedLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,7 @@ public class MockLocationDataUtils {
     }
 
     private static void generateUserLocationHistory(UserLocation userLocation) {
+        userLocation.addToVisitedLocations(new VisitedLocation(userLocation.getUserId(), new GpsUtil().getAttractions().get(0), getRandomTime()));
         IntStream.range(0, 3).forEach(i-> {
             userLocation.addToVisitedLocations(new VisitedLocation(userLocation.getUserId(), new gpsUtil.location.Location(generateRandomLatitude(), generateRandomLongitude()), getRandomTime()));
         });
