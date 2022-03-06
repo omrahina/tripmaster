@@ -1,8 +1,9 @@
 package com.tripmaster.rewards.controller;
 
+import com.tripmaster.rewards.dto.NearbyAttractionDto;
 import com.tripmaster.rewards.dto.UserPreferencesDto;
 import com.tripmaster.rewards.dto.VisitedLocationDto;
-import com.tripmaster.rewards.exceptions.NoRewardException;
+import com.tripmaster.rewards.exceptions.NoDealOrRewardException;
 import com.tripmaster.rewards.model.Reward;
 import com.tripmaster.rewards.model.UserReward;
 import com.tripmaster.rewards.service.RewardService;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import tripPricer.Provider;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +35,7 @@ public class RewardController {
         this.userRewardService = userRewardService;
     }
 
-    @GetMapping("/rewards")
+    @RequestMapping("/rewards")
     ResponseEntity<List<Reward>> getRewards(@RequestParam String username, @RequestBody List<VisitedLocationDto> visitedLocations) {
         UserReward userRewardEntry = getUserRewardEntry(username);
         if (userRewardEntry == null) {
@@ -45,9 +47,9 @@ public class RewardController {
         } catch (InterruptedException | ExecutionException e) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred! Please retry", e);
-        } catch (NoRewardException e) {
+        } catch (NoDealOrRewardException e) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, e.getMessage(), e);
+                    HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
 
     }
@@ -60,7 +62,32 @@ public class RewardController {
             userRewardService.addUserReward(updatedUserReward);
             return new ResponseEntity<>(updatedUserReward, HttpStatus.OK);
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No reward entry found for " + username);
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No reward entry found for " + username);
+    }
+
+    @RequestMapping("/nearbyAttractions")
+    public ResponseEntity<NearbyAttractionDto> getNearbyAttractions(@RequestBody VisitedLocationDto visitedLocation) {
+        NearbyAttractionDto nearbyAttractionDto = rewardService.getNearByAttractions(visitedLocation);
+        if (!nearbyAttractionDto.getNearbyAttractions().isEmpty()) {
+            return new ResponseEntity<>(nearbyAttractionDto, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(nearbyAttractionDto, HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/tripDeals")
+    public ResponseEntity<List<Provider>> getTripDeals(@RequestParam String username) {
+        UserReward userRewardEntry = getUserRewardEntry(username);
+        if (userRewardEntry != null) {
+            try {
+                List<Provider> providers = rewardService.getTripDeals(userRewardEntry);
+                return new ResponseEntity<>(providers, HttpStatus.OK);
+            } catch (NoDealOrRewardException e) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, e.getMessage(), e);
+            }
+
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No reward entry found for " + username);
     }
 
     private UserReward getUserRewardEntry(String username) {

@@ -52,18 +52,28 @@ public class TourGuideController {
         return userLocationProxy.getAllKnownLocations();
     }
 
-    @GetMapping("/rewards")
-    List<RewardBean> getRewards(@RequestParam String username) {
+    @RequestMapping("/rewards")
+    List getRewards(@RequestParam String username) {
         List<VisitedLocationBean> visitedLocations = userLocationProxy.getUserLocations(username);
-        if (!CollectionUtils.isEmpty(visitedLocations)) {
-            return userRewardProxy.getRewards(username, visitedLocations);
+        if (CollectionUtils.isEmpty(visitedLocations)) {
+            return visitedLocations;
         }
-        return null;
+        return userRewardProxy.getRewards(username, visitedLocations);
     }
 
     @PutMapping("/preferences")
     UserRewardBean updatePreferences(@RequestParam String username, @RequestBody UserPreferencesBean userPreferences) {
         return userRewardProxy.updatePreferences(username, userPreferences);
+    }
+
+    @RequestMapping("/nearbyAttractions")
+    NearbyAttractionBean getNearbyAttractions(@RequestParam String username) {
+        return userRewardProxy.getNearbyAttractions(userLocationProxy.getLocation(username));
+    }
+
+    @GetMapping("/tripDeals")
+    List<ProviderBean> getTripDeals(@RequestParam String username) {
+        return userRewardProxy.getTripDeals(username);
     }
 
 }

@@ -9,6 +9,12 @@ public class VisitedLocationDto {
     private LocationDto location;
     private Date timeVisited;
 
+    public VisitedLocationDto(UUID userId, LocationDto location, Date timeVisited) {
+        this.userId = userId;
+        this.location = location;
+        this.timeVisited = timeVisited;
+    }
+
     public UUID getUserId() {
         return userId;
     }

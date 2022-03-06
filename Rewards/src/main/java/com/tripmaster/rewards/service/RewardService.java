@@ -1,9 +1,7 @@
 package com.tripmaster.rewards.service;
 
-import com.tripmaster.rewards.dto.LocationDto;
-import com.tripmaster.rewards.dto.UserPreferencesDto;
-import com.tripmaster.rewards.dto.VisitedLocationDto;
-import com.tripmaster.rewards.exceptions.NoRewardException;
+import com.tripmaster.rewards.dto.*;
+import com.tripmaster.rewards.exceptions.NoDealOrRewardException;
 import com.tripmaster.rewards.model.Reward;
 import com.tripmaster.rewards.model.UserPreferences;
 import com.tripmaster.rewards.model.UserReward;
@@ -13,51 +11,53 @@ import gpsUtil.location.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import rewardCentral.RewardCentral;
+import tripPricer.Provider;
+import tripPricer.TripPricer;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 public class RewardService {
+
+    @Value("${tripPricer.tripPricerApiKey}")
+    private String tripPricerApiKey;
 
     private final Logger LOGGER = LoggerFactory.getLogger(RewardService.class);
 
     private final GpsUtil gpsUtil;
     private final RewardCentral rewardsCentral;
     private final ExecutorService rewardsExecutorService;
+    private final TripPricer tripPricer;
 
     private static final double STATUTE_MILES_PER_NAUTICAL_MILE = 1.15077945;
     private final int ATTRACTION_PROXIMITY_RANGE = 200;
     private int proximityBuffer;
 
-    public RewardService(GpsUtil gpsUtil, RewardCentral rewardCentral, @Qualifier("fixedRewardsThreadPool") ExecutorService rewardsExecutorService) {
+    public RewardService(GpsUtil gpsUtil, RewardCentral rewardCentral, @Qualifier("fixedRewardsThreadPool") ExecutorService rewardsExecutorService, TripPricer tripPricer) {
         this.gpsUtil = gpsUtil;
         this.rewardsCentral = rewardCentral;
         this.rewardsExecutorService = rewardsExecutorService;
+        this.tripPricer = tripPricer;
         this.proximityBuffer = 10;
     }
 
-    public int getProximityBuffer() {
-        return proximityBuffer;
-    }
-
-    public void setProximityBuffer(int proximityBuffer) {
-        this.proximityBuffer = proximityBuffer;
-    }
-
-    public List<Reward> getUserRewards(UserReward userReward , List<VisitedLocationDto> visitedLocations) throws ExecutionException, InterruptedException, NoRewardException {
+    public List<Reward> getUserRewards(UserReward userReward , List<VisitedLocationDto> visitedLocations) throws ExecutionException, InterruptedException, NoDealOrRewardException {
         List<Reward> rewards = calculateRewards(userReward, visitedLocations).get();
         if (!rewards.isEmpty()){
             LOGGER.info("user rewards retrieved");
             return rewards;
         }
         LOGGER.debug("No rewards found");
-        throw new NoRewardException("Rewards record empty");
+        throw new NoDealOrRewardException("Rewards record empty");
     }
 
     public Future<List<Reward>> calculateRewards(UserReward userReward , List<VisitedLocationDto> userLocations) {
@@ -85,6 +85,37 @@ public class RewardService {
         return userReward;
     }
 
+    public NearbyAttractionDto getNearByAttractions(VisitedLocationDto visitedLocation) {
+        LocationDto userLocation = visitedLocation.getLocation();
+        List<Attraction> fiveNearestAttractions = gpsUtil.getAttractions().stream()
+                .sorted(Comparator.comparingDouble(attraction -> getDistance(attraction, userLocation)))
+                .limit(5)
+                .collect(Collectors.toList());
+        if (!fiveNearestAttractions.isEmpty()) {
+            List<AttractionInfo> attractions = fiveNearestAttractions.stream()
+                    .map(attraction -> new AttractionInfo(attraction, getDistance(attraction, userLocation),
+                            rewardsCentral.getAttractionRewardPoints(attraction.attractionId, visitedLocation.getUserId())))
+                    .collect(Collectors.toList());
+            LOGGER.info(fiveNearestAttractions.size() +" nearest attraction(s) retrieved");
+            return new NearbyAttractionDto(userLocation, attractions);
+        }
+        LOGGER.error("Cannot return the nearest attractions");
+        return new NearbyAttractionDto(userLocation);
+    }
+
+    public List<Provider> getTripDeals(UserReward userReward) throws NoDealOrRewardException{
+        int cumulativeRewardPoints = userReward.getRewards().stream().mapToInt(Reward::getRewardPoints).sum();
+        List<Provider> providers = tripPricer.getPrice(tripPricerApiKey, userReward.getId(), userReward.getUserPreferences().getNumberOfAdults(),
+                userReward.getUserPreferences().getNumberOfChildren(), userReward.getUserPreferences().getTripDuration(), cumulativeRewardPoints);
+        if (!providers.isEmpty()) {
+            LOGGER.info("TripDeals retrieved");
+            userReward.setTripDeals(providers);
+            return providers;
+        }
+        LOGGER.debug("Trip deals empty");
+        throw new NoDealOrRewardException("No Trip Deal available");
+    }
+
     /**
      * Assures that no new task is submitted and awaits for executing tasks to terminate
      */
@@ -95,6 +126,14 @@ public class RewardService {
         } catch (InterruptedException e) {
             LOGGER.error(e.getMessage());
         }
+    }
+
+    public int getProximityBuffer() {
+        return proximityBuffer;
+    }
+
+    public void setProximityBuffer(int proximityBuffer) {
+        this.proximityBuffer = proximityBuffer;
     }
 
     private boolean nearAttraction(VisitedLocationDto visitedLocation, Attraction attraction) {

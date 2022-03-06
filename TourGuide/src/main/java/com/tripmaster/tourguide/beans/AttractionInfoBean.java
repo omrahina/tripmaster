@@ -1,18 +1,10 @@
 package com.tripmaster.tourguide.beans;
 
-public class RewardBean {
+public class AttractionInfoBean {
 
-    private VisitedLocationBean visitedLocation;
     private AttractionBean attraction;
+    private double distanceFromUserLocation;
     private int rewardPoints;
-
-    public VisitedLocationBean getVisitedLocation() {
-        return visitedLocation;
-    }
-
-    public void setVisitedLocation(VisitedLocationBean visitedLocation) {
-        this.visitedLocation = visitedLocation;
-    }
 
     public AttractionBean getAttraction() {
         return attraction;
@@ -20,6 +12,14 @@ public class RewardBean {
 
     public void setAttraction(AttractionBean attraction) {
         this.attraction = attraction;
+    }
+
+    public double getDistanceFromUserLocation() {
+        return distanceFromUserLocation;
+    }
+
+    public void setDistanceFromUserLocation(double distanceFromUserLocation) {
+        this.distanceFromUserLocation = distanceFromUserLocation;
     }
 
     public int getRewardPoints() {
