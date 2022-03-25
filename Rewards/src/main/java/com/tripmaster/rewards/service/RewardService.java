@@ -39,7 +39,6 @@ public class RewardService {
     private final TripPricer tripPricer;
 
     private static final double STATUTE_MILES_PER_NAUTICAL_MILE = 1.15077945;
-    private final int ATTRACTION_PROXIMITY_RANGE = 200;
     private int proximityBuffer;
 
     public RewardService(GpsUtil gpsUtil, RewardCentral rewardCentral, @Qualifier("fixedRewardsThreadPool") ExecutorService rewardsExecutorService, TripPricer tripPricer) {
@@ -50,6 +49,15 @@ public class RewardService {
         this.proximityBuffer = 10;
     }
 
+    /**
+     * Returns a user's reward points
+     * @param userReward the reward entry
+     * @param visitedLocations a list of visited locations
+     * @return a list of reward
+     * @throws ExecutionException
+     * @throws InterruptedException
+     * @throws NoDealOrRewardException
+     */
     public List<Reward> getUserRewards(UserReward userReward , List<VisitedLocationDto> visitedLocations) throws ExecutionException, InterruptedException, NoDealOrRewardException {
         List<Reward> rewards = calculateRewards(userReward, visitedLocations).get();
         if (!rewards.isEmpty()){
@@ -60,6 +68,12 @@ public class RewardService {
         throw new NoDealOrRewardException("Rewards record empty");
     }
 
+    /**
+     * Calculates the reward points
+     * @param userReward the reward entry
+     * @param userLocations a list of visited locations
+     * @return a future list of rewards
+     */
     public Future<List<Reward>> calculateRewards(UserReward userReward , List<VisitedLocationDto> userLocations) {
         return rewardsExecutorService.submit(() -> {
             List<Attraction> attractions = gpsUtil.getAttractions();
@@ -75,9 +89,14 @@ public class RewardService {
             }
             return userReward.getRewards();
         });
-
     }
 
+    /**
+     * Updates user preferences
+     * @param userReward the reward entry
+     * @param userPreferences the preferences
+     * @return the updated reward entry
+     */
     public UserReward updatePreferences(UserReward userReward, UserPreferencesDto userPreferences) {
         UserPreferences newPreferences = new UserPreferences(userPreferences.getTripDuration(), userPreferences.getTicketQuantity(),
                 userPreferences.getNumberOfAdults(), userPreferences.getNumberOfChildren());
@@ -85,6 +104,11 @@ public class RewardService {
         return userReward;
     }
 
+    /**
+     * Returns the five nearest attractions from a specified position
+     * @param visitedLocation the last known position
+     * @return the attractions
+     */
     public NearbyAttractionDto getNearByAttractions(VisitedLocationDto visitedLocation) {
         LocationDto userLocation = visitedLocation.getLocation();
         List<Attraction> fiveNearestAttractions = gpsUtil.getAttractions().stream()
@@ -103,6 +127,12 @@ public class RewardService {
         return new NearbyAttractionDto(userLocation);
     }
 
+    /**
+     * Get trip deals according to user's preferences
+     * @param userReward
+     * @return the corresponding deals
+     * @throws NoDealOrRewardException
+     */
     public List<Provider> getTripDeals(UserReward userReward) throws NoDealOrRewardException{
         int cumulativeRewardPoints = userReward.getRewards().stream().mapToInt(Reward::getRewardPoints).sum();
         List<Provider> providers = tripPricer.getPrice(tripPricerApiKey, userReward.getId(), userReward.getUserPreferences().getNumberOfAdults(),
@@ -128,18 +158,12 @@ public class RewardService {
         }
     }
 
-    public int getProximityBuffer() {
-        return proximityBuffer;
-    }
-
-    public void setProximityBuffer(int proximityBuffer) {
-        this.proximityBuffer = proximityBuffer;
-    }
-
-    private boolean nearAttraction(VisitedLocationDto visitedLocation, Attraction attraction) {
-        return getDistance(attraction, visitedLocation.getLocation()) > proximityBuffer ? false : true;
-    }
-
+    /**
+     * Calculates the distance between two positions
+     * @param loc1
+     * @param loc2
+     * @return the distance
+     */
     public double getDistance(Location loc1, LocationDto loc2) {
         double lat1 = Math.toRadians(loc1.latitude);
         double lon1 = Math.toRadians(loc1.longitude);
@@ -151,6 +175,10 @@ public class RewardService {
 
         double nauticalMiles = 60 * Math.toDegrees(angle);
         return STATUTE_MILES_PER_NAUTICAL_MILE * nauticalMiles;
+    }
+
+    private boolean nearAttraction(VisitedLocationDto visitedLocation, Attraction attraction) {
+        return getDistance(attraction, visitedLocation.getLocation()) > proximityBuffer ? false : true;
     }
 
     private int getRewardPoints(Attraction attraction, UserReward userReward) {

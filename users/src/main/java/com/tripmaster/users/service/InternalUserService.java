@@ -15,7 +15,12 @@ public class InternalUserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InternalUserService.class);
 
-
+    /**
+     * Add a new user
+     * @param user information concerning the user to be added
+     * @return the saved user
+     * @throws UserException
+     */
     public User addUser(User user) throws UserException {
         if(!InternalDataHelper.getInternalUserMap().containsKey(user.getUsername())) {
             InternalDataHelper.addInternalUser(user);
@@ -26,8 +31,14 @@ public class InternalUserService {
         throw new UserException("User already exists");
     }
 
-    public User findUserByUserName(String userName) throws UserException {
-        User user = InternalDataHelper.getInternalUserMap().get(userName);
+    /**
+     * Finds a user by name
+     * @param username a string
+     * @return the corresponding user
+     * @throws UserException
+     */
+    public User findUserByUserName(String username) throws UserException {
+        User user = InternalDataHelper.getInternalUserMap().get(username);
         if (user != null) {
             LOGGER.info("User found");
             return user;
@@ -36,6 +47,10 @@ public class InternalUserService {
         throw new UserException("User not found");
     }
 
+    /**
+     * Returns all the users
+     * @return a list of users
+     */
     public List<User> getAllUsers() {
         return new ArrayList<>(InternalDataHelper.getInternalUserMap().values());
     }

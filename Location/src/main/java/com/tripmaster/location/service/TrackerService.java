@@ -1,5 +1,6 @@
 package com.tripmaster.location.service;
 
+import com.tripmaster.location.data.MockLocationDataUtils;
 import com.tripmaster.location.dto.LocationHistoryDto;
 import com.tripmaster.location.exceptions.UserLocationException;
 import com.tripmaster.location.model.UserLocation;
@@ -9,6 +10,7 @@ import gpsUtil.location.VisitedLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class TrackerService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(TrackerService.class);
+    private static final long TRACKING_POLLING_INTERVAL = 5000;
 
     private final GpsUtil gpsUtil;
     private final ExecutorService trackerExecutorService;
@@ -31,6 +34,11 @@ public class TrackerService {
         this.trackerExecutorService = trackerExecutorService;
     }
 
+    /**
+     * Performs the actual tracking
+     * @param userLocation a location entry
+     * @return a future object
+     */
     public Future<VisitedLocation> trackUserLocation(UserLocation userLocation){
         return trackerExecutorService.submit(() -> {
             VisitedLocation visitedLocation = gpsUtil.getUserLocation(userLocation.getUserId());
@@ -39,6 +47,12 @@ public class TrackerService {
         });
     }
 
+    /**
+     * Returns the last known location of a user
+     * @param userLocation a location entry
+     * @return location information
+     * @throws UserLocationException
+     */
     public VisitedLocation getUserLocation(UserLocation userLocation) throws UserLocationException{
         if (userLocation.getVisitedLocations().isEmpty()) {
             try {
@@ -54,6 +68,11 @@ public class TrackerService {
         return getLastVisitedLocation(userLocation);
     }
 
+    /**
+     * Returns all known user locations
+     * @param userLocations a list of location entries
+     * @return the location history or null if no entry was found
+     */
     public List<LocationHistoryDto> getAllKnownLocations(List<UserLocation> userLocations) {
         List<LocationHistoryDto> locationHistoryList = userLocations.stream()
                 .filter(user -> !user.getVisitedLocations().isEmpty())
@@ -82,6 +101,14 @@ public class TrackerService {
         } catch (InterruptedException e) {
             LOGGER.error(e.getMessage());
         }
+    }
+
+    /**
+     * Tracks all users every 5 seconds
+     */
+    @Scheduled(fixedDelay = TRACKING_POLLING_INTERVAL)
+    public void periodicalTracking() {
+        MockLocationDataUtils.getInternalUserLocationMap().values().forEach(entry -> trackUserLocation(entry));
     }
 
     private VisitedLocation getLastVisitedLocation(UserLocation userLocation) {
