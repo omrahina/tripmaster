@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "location-microservice", url = "localhost:8090/tracker")
+@FeignClient(name = "location-microservice", url = "location:8090/tracker")
 public interface UserLocationMicroserviceProxy {
 
     @PostMapping("/location")

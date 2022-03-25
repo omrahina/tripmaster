@@ -2,17 +2,32 @@ version: "3"
 services:
   users:
     image: tripmaster/users
+    networks:
+      - trip-master
     ports:
       - 8081:8081
   location:
     image: tripmaster/location
+    networks:
+      - trip-master
     ports:
       - 8090:8090
   rewards:
     image: tripmaster/rewards
+    networks:
+      - trip-master
     ports:
       - 8091:8091
   tourguide:
     image: tripmaster/tourguide
+    networks:
+      - trip-master
+    links:
+      - "users:users"
+      - "location:location"
+      - "rewards:rewards"
     ports:
     - 8080:8080
+
+networks:
+  trip-master:
