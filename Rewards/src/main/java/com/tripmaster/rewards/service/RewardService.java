@@ -97,11 +97,11 @@ public class RewardService {
      * @param userPreferences the preferences
      * @return the updated reward entry
      */
-    public UserReward updatePreferences(UserReward userReward, UserPreferencesDto userPreferences) {
+    public UserPreferences updatePreferences(UserReward userReward, UserPreferencesDto userPreferences) {
         UserPreferences newPreferences = new UserPreferences(userPreferences.getTripDuration(), userPreferences.getTicketQuantity(),
                 userPreferences.getNumberOfAdults(), userPreferences.getNumberOfChildren());
         userReward.setUserPreferences(newPreferences);
-        return userReward;
+        return newPreferences;
     }
 
     /**

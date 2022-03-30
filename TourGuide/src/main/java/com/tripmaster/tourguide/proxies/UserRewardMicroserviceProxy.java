@@ -9,11 +9,14 @@ import java.util.List;
 @FeignClient(name = "rewards-microservice", url = "rewards:8091/reward")
 public interface UserRewardMicroserviceProxy {
 
+    @PostMapping("/userRewardEntry")
+    UserRewardBean addUserRewardEntry(@RequestParam String username);
+
     @RequestMapping("/rewards")
     List<RewardBean> getRewards(@RequestParam String username, @RequestBody List<VisitedLocationBean> visitedLocations);
 
     @PutMapping("/preferences")
-    UserRewardBean updatePreferences(@RequestParam String username, @RequestBody UserPreferencesBean userPreferences);
+    UserPreferencesBean updatePreferences(@RequestParam String username, @RequestBody UserPreferencesBean userPreferences);
 
     @RequestMapping("/nearbyAttractions")
     NearbyAttractionBean getNearbyAttractions(@RequestBody VisitedLocationBean visitedLocation);

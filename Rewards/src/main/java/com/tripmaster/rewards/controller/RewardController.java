@@ -5,6 +5,7 @@ import com.tripmaster.rewards.dto.UserPreferencesDto;
 import com.tripmaster.rewards.dto.VisitedLocationDto;
 import com.tripmaster.rewards.exceptions.NoDealOrRewardException;
 import com.tripmaster.rewards.model.Reward;
+import com.tripmaster.rewards.model.UserPreferences;
 import com.tripmaster.rewards.model.UserReward;
 import com.tripmaster.rewards.service.RewardService;
 import com.tripmaster.rewards.service.UserRewardService;
@@ -35,32 +36,40 @@ public class RewardController {
         this.userRewardService = userRewardService;
     }
 
+    @PostMapping("/userRewardEntry")
+    ResponseEntity<UserReward> addUserRewardEntry(@RequestParam String username) {
+        UserReward userRewardEntry = userRewardService.addUserReward(new UserReward(UUID.randomUUID(), username));
+        if (userRewardEntry != null) {
+            return new ResponseEntity<>(userRewardEntry, HttpStatus.CREATED);
+        }
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "Reward entry already exists ");
+    }
+
     @RequestMapping("/rewards")
     ResponseEntity<List<Reward>> getRewards(@RequestParam String username, @RequestBody List<VisitedLocationDto> visitedLocations) {
         UserReward userRewardEntry = getUserRewardEntry(username);
-        if (userRewardEntry == null) {
-            userRewardEntry = userRewardService.addUserReward(new UserReward(UUID.randomUUID(), username));
+        if (userRewardEntry != null) {
+            try {
+                List<Reward> rewards = rewardService.getUserRewards(userRewardEntry, visitedLocations);
+                return new ResponseEntity<>(rewards, HttpStatus.OK);
+            } catch (InterruptedException | ExecutionException e) {
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred! Please retry", e);
+            } catch (NoDealOrRewardException e) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, e.getMessage(), e);
+            }
         }
-        try {
-            List<Reward> rewards = rewardService.getUserRewards(userRewardEntry, visitedLocations);
-            return new ResponseEntity<>(rewards, HttpStatus.OK);
-        } catch (InterruptedException | ExecutionException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred! Please retry", e);
-        } catch (NoDealOrRewardException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, e.getMessage(), e);
-        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No reward entry found for " + username);
 
     }
 
     @PutMapping("/preferences")
-    ResponseEntity<UserReward> updatePreferences(@RequestParam String username, @RequestBody UserPreferencesDto userPreferences) {
+    ResponseEntity<UserPreferences> updatePreferences(@RequestParam String username, @RequestBody UserPreferencesDto userPreferences) {
         UserReward userRewardEntry = getUserRewardEntry(username);
         if (userRewardEntry != null) {
-            UserReward updatedUserReward = rewardService.updatePreferences(userRewardEntry, userPreferences);
-            userRewardService.addUserReward(updatedUserReward);
-            return new ResponseEntity<>(updatedUserReward, HttpStatus.OK);
+            UserPreferences updatedUserPreferences = rewardService.updatePreferences(userRewardEntry, userPreferences);
+            return new ResponseEntity<>(updatedUserPreferences, HttpStatus.OK);
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No reward entry found for " + username);
     }

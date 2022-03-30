@@ -41,7 +41,7 @@ public class PerformanceTest {
 
     @Test
     public void highVolumeGetRewards() {
-        MockRewardDataUtils.setInternalUserNumber(100);
+        MockRewardDataUtils.setInternalUserNumber(10);
         MockRewardDataUtils.initializeInternalRewards();
 
         Attraction attraction = gpsUtil.getAttractions().get(0);

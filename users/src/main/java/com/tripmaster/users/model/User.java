@@ -1,6 +1,5 @@
 package com.tripmaster.users.model;
 
-import java.util.Date;
 import java.util.UUID;
 
 public class User {
@@ -12,8 +11,6 @@ public class User {
     private String phoneNumber;
 
     private String emailAddress;
-
-    private Date latestLocationTimestamp;
 
     public User(String username, String phoneNumber, String emailAddress) {
         this.userId = UUID.randomUUID();
@@ -51,13 +48,5 @@ public class User {
 
     public String getEmailAddress() {
         return emailAddress;
-    }
-
-    public void setLatestLocationTimestamp(Date latestLocationTimestamp) {
-        this.latestLocationTimestamp = latestLocationTimestamp;
-    }
-
-    public Date getLatestLocationTimestamp() {
-        return latestLocationTimestamp;
     }
 }

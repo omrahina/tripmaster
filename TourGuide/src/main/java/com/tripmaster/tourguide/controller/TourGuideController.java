@@ -33,7 +33,9 @@ public class TourGuideController {
     public UserBean addUser(@RequestBody UserBean user) {
         UserBean savedUser = usersProxy.addUser(user);
         UserLocationBean location = userLocationProxy.addLocationEntry(user.getUsername());
-        LOGGER.info(location.getUsername());
+        UserRewardBean reward = userRewardProxy.addUserRewardEntry(user.getUsername());
+        LOGGER.info("location entry " + location.getUserId());
+        LOGGER.info("reward entry " + reward.getId());
         return savedUser;
     }
 
@@ -62,7 +64,7 @@ public class TourGuideController {
     }
 
     @PutMapping("/preferences")
-    UserRewardBean updatePreferences(@RequestParam String username, @RequestBody UserPreferencesBean userPreferences) {
+    UserPreferencesBean updatePreferences(@RequestParam String username, @RequestBody UserPreferencesBean userPreferences) {
         return userRewardProxy.updatePreferences(username, userPreferences);
     }
 

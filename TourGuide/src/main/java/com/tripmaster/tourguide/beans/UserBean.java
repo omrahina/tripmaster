@@ -1,6 +1,5 @@
 package com.tripmaster.tourguide.beans;
 
-import java.util.Date;
 import java.util.UUID;
 
 public class UserBean {
@@ -12,8 +11,6 @@ public class UserBean {
     private String phoneNumber;
 
     private String emailAddress;
-
-    private Date latestLocationTimestamp;
 
     public UserBean() {
     }
@@ -48,13 +45,5 @@ public class UserBean {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
-    }
-
-    public Date getLatestLocationTimestamp() {
-        return latestLocationTimestamp;
-    }
-
-    public void setLatestLocationTimestamp(Date latestLocationTimestamp) {
-        this.latestLocationTimestamp = latestLocationTimestamp;
     }
 }
