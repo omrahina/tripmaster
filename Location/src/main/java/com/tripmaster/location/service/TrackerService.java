@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class TrackerService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(TrackerService.class);
-    private static final long TRACKING_POLLING_INTERVAL = 5000;
+    private static final long TRACKING_POLLING_INTERVAL = 15000;
 
     private final GpsUtil gpsUtil;
     private final ExecutorService trackerExecutorService;
@@ -43,6 +43,7 @@ public class TrackerService {
         return trackerExecutorService.submit(() -> {
             VisitedLocation visitedLocation = gpsUtil.getUserLocation(userLocation.getUserId());
             userLocation.addToVisitedLocations(visitedLocation);
+            userLocation.setLatestLocationTimestamp(visitedLocation.timeVisited);
             return visitedLocation;
         });
     }
