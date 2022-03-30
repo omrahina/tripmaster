@@ -1,0 +1,335 @@
+{
+	"info": {
+		"_postman_id": "5ac37cd1-47de-4613-8353-c27836493d67",
+		"name": "Trip Master",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Reward",
+			"item": [
+				{
+					"name": "getRewards",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"userId\": \"173f8217-a956-4eae-9f61-0740c7969067\",\r\n        \"location\": {\r\n            \"longitude\": -117.922008,\r\n            \"latitude\": 33.817595\r\n        },\r\n        \"timeVisited\": \"2022-01-30T17:51:57.695+00:00\"\r\n    },\r\n    {\r\n        \"userId\": \"173f8217-a956-4eae-9f61-0740c7969067\",\r\n        \"location\": {\r\n            \"longitude\": -121.51292317799758,\r\n            \"latitude\": 62.65102687965995\r\n        },\r\n        \"timeVisited\": \"2022-01-31T17:51:57.695+00:00\"\r\n    },\r\n    {\r\n        \"userId\": \"173f8217-a956-4eae-9f61-0740c7969067\",\r\n        \"location\": {\r\n            \"longitude\": -15.206335614925734,\r\n            \"latitude\": 30.245129058749455\r\n        },\r\n        \"timeVisited\": \"2022-02-01T17:51:57.695+00:00\"\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8091/reward/rewards?username=internalUser1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8091",
+							"path": [
+								"reward",
+								"rewards"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "internalUser1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updatePreferences",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tripDuration\": 3,\r\n    \"ticketQuantity\": 5,\r\n    \"numberOfAdults\": 2,\r\n    \"numberOfChildren\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8091/reward/preferences?username=internalUser1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8091",
+							"path": [
+								"reward",
+								"preferences"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "internalUser1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addRewardEntry",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8091/reward/userRewardEntry?username=internalUser1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8091",
+							"path": [
+								"reward",
+								"userRewardEntry"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "internalUser1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "TourguideClient",
+			"item": [
+				{
+					"name": "addUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"testUser1\",\r\n    \"phoneNumber\": \"010101010101\",\r\n    \"emailAddress\": \"testUser1@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/tourguide/addUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"tourguide",
+								"addUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getLocation",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8080/tourguide/location?username=testUser1",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"tourguide",
+								"location"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "testUser1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getUserLocations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/tourguide/locations?username=testUser1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"tourguide",
+								"locations"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "testUser1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllKnownLocations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/tourguide/allKnownLocations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"tourguide",
+								"allKnownLocations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getRewards",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/tourguide/rewards?username=testUser1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"tourguide",
+								"rewards"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "testUser1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getTripDeals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/tourguide/tripDeals?username=testUser1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"tourguide",
+								"tripDeals"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "testUser1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "nearByAttractions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/tourguide/nearbyAttractions?username=testUser1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"tourguide",
+								"nearbyAttractions"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "testUser1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updatePreferences",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"tripDuration\": 3,\r\n    \"ticketQuantity\": 5,\r\n    \"numberOfAdults\": 2,\r\n    \"numberOfChildren\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/tourguide/preferences?username=testUser1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"tourguide",
+								"preferences"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "testUser1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
